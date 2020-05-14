@@ -5641,6 +5641,11 @@ react-native-screens@~2.2.0:
   dependencies:
     debounce "^1.2.0"
 
+react-native-select-input-ios@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/react-native-select-input-ios/-/react-native-select-input-ios-2.0.5.tgz#95a6b65569513cd5ad6f7b94016b6bd2477c6d18"
+  integrity sha512-3667Zvgjt5tDFu5PvbdnHs6m72k9WTN2PM2nj91xsMGzMCi7Bz2FYU6WjK3JNRT358fFhblKICxBLVJE/1h7yA==
+
 react-native-view-shot@3.1.2:
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.1.2.tgz#8c8e84c67a4bc8b603e697dbbd59dbc9b4f84825"

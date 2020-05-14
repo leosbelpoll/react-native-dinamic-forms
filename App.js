@@ -13,6 +13,7 @@ import SubStandards from "./screens/SubStandards";
 import Form from "./screens/Form";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Vehiculos from "./screens/Vehiculos";
 
 const Stack = createStackNavigator();
 
@@ -48,13 +49,14 @@ export default function App(props) {
 		return (
 			<View style={styles.container}>
 				{/* {Platform.OS === "ios" && <StatusBar barStyle="dark-content" />} */}
-				<Header/>
+				<Header />
 				<NavigationContainer>
 					<Stack.Navigator
 						screenOptions={{
 							headerShown: false
 						}}
 					>
+						<Stack.Screen name="Vehiculos" component={Vehiculos} />
 						<Stack.Screen name="Login" component={Login} />
 						<Stack.Screen name="Projects" component={Projects} />
 						<Stack.Screen name="Standards" component={Standards} />
@@ -68,7 +70,7 @@ export default function App(props) {
 						/>
 					</Stack.Navigator>
 				</NavigationContainer>
-				<Footer/>
+				<Footer />
 			</View>
 		);
 	}
