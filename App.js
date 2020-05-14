@@ -14,6 +14,7 @@ import Form from "./screens/Form";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Vehiculos from "./screens/Vehiculos";
+import Camera from "./screens/Camera";
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,7 @@ export default function App(props) {
 						<Stack.Screen name="Login" component={Login} />
 						<Stack.Screen name="Projects" component={Projects} />
 						<Stack.Screen name="Standards" component={Standards} />
+						<Stack.Screen name="Camera" component={Camera} />
 						<Stack.Screen
 							name="SubStandards"
 							component={SubStandards}

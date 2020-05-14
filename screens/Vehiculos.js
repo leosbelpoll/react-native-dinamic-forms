@@ -1,9 +1,6 @@
-import * as WebBrowser from "expo-web-browser";
 import React, { useEffect, useState } from "react";
 import * as Network from 'expo-network'
 import {
-    Image,
-    Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -18,6 +15,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import { Camera } from 'expo-camera';
 
 
 
@@ -41,38 +39,23 @@ export default function Vehiculos(props) {
         }
     };
 
+    const openCamera = async () => {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
+        if (status === 'granted') {
+            props.navigation.navigate("Camera");
+        } else {
+            Alert.alert('La app no tiene permisos para usar la camara')
+        }
+    };
 
-    const options = [
-        { value: 0, label: 'un valor' },
-        { value: 1, label: 'segundo dato' },
-        { value: 2, label: 'un valor' },
-        { value: 3, label: 'segundo dato' },
-        { value: 4, label: 'un valor' },
-        { value: 5, label: 'segundo dato' },
-        { value: 6, label: 'un valor' },
-        { value: 7, label: 'segundo dato' },
-        { value: 8, label: 'un valor' },
-        { value: 9, label: 'segundo dato' },
-        { value: 10, label: 'un valor' },
-        { value: 11, label: 'segundo dato' },
-        { value: 12, label: 'un valor' },
-        { value: 13, label: 'segundo dato' },
-        { value: 14, label: 'un valor' },
-        { value: 15, label: 'segundo dato' },
-        { value: 16, label: 'un valor' },
-        { value: 17, label: 'segundo dato' },
-    ]
     const saveData = async () => {
-        await AsyncStorage.setItem("foo", "bar");
-        const result = await AsyncStorage.getItem("foo");
         const networkStatus = await Network.getNetworkStateAsync();
         if (networkStatus.isConnected) {
             Alert.alert("Esta conectado");
         } else {
             Alert.alert("No esta conectado");
         }
-
     };
 
     const fetchMyAPI = async () => {
@@ -183,7 +166,7 @@ export default function Vehiculos(props) {
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
                             style={styles.buttomPequeno}
-                            onPress={() => openGallery()}
+                            onPress={() => openCamera()}
                         >
                             <Text style={styles.textButton}>Seleccionar archivo</Text>
                         </TouchableOpacity>
