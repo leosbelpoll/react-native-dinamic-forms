@@ -1,5 +1,5 @@
 import * as WebBrowser from "expo-web-browser";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import * as Network from 'expo-network'
 import {
     Image,
@@ -15,9 +15,12 @@ import {
 import SelectInput from 'react-native-select-input-ios';
 import { ScrollView } from "react-native-gesture-handler";
 
-import { MonoText } from "../components/StyledText";
+import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
 
 export default function Vehiculos(props) {
+    const [placas, setPlacas] = useState([]);
+    const [error, setError] = useState();
+
     const options = [
         { value: 0, label: 'un valor' },
         { value: 1, label: 'segundo dato' },
@@ -49,6 +52,38 @@ export default function Vehiculos(props) {
         }
 
     };
+
+    const fetchMyAPI = async () => {
+        AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
+            .then(token => {
+                fetch(`${API_URL}/no-placas`, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                            setError("Unauthorized");
+                            setPlacas(null);
+                        } else {
+                            setError(null);
+                            setPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
+                        }
+                    });
+            })
+            .done();
+
+    }
+
+
+    useEffect(() => {
+        fetchMyAPI();
+    }, []);
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -59,7 +94,7 @@ export default function Vehiculos(props) {
                     <Text style={styles.title}>Vehiculos</Text>
 
                     <Text style={styles.label}>No Placas</Text>
-                    <SelectInput style={styles.select} options={options} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={placas} placeholder="Seleccione" />
 
                     <Text style={styles.label}>Recorrido Inicial</Text>
                     <TextInput style={styles.inputs} placeholder="Km/h" />
