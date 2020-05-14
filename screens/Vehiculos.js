@@ -59,7 +59,7 @@ export default function Vehiculos(props) {
                     <Text style={styles.title}>Vehiculos</Text>
 
                     <Text style={styles.label}>No Placas</Text>
-                    <TextInput style={styles.inputs} placeholder="abc-189" />
+                    <SelectInput style={styles.select} options={options} placeholder="Seleccione" />
 
                     <Text style={styles.label}>Recorrido Inicial</Text>
                     <TextInput style={styles.inputs} placeholder="Km/h" />
