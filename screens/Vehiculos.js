@@ -16,6 +16,11 @@ import SelectInput from 'react-native-select-input-ios';
 import { ScrollView } from "react-native-gesture-handler";
 
 import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from 'expo-permissions';
+
+
+
 
 export default function Vehiculos(props) {
     const [placas, setPlacas] = useState([]);
@@ -23,6 +28,20 @@ export default function Vehiculos(props) {
     const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
     const [estadosMedicion, setEstadosMedicion] = useState([]);
     const [error, setError] = useState();
+
+    const openGallery = async () => {
+        const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        if (resultPermission) {
+            const resultImagePiker = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+                base64: true,
+            });
+            console.log(resultImagePiker);
+        }
+    };
+
+
 
     const options = [
         { value: 0, label: 'un valor' },
@@ -161,6 +180,14 @@ export default function Vehiculos(props) {
 
                     <Text style={styles.label}>Recorrido Final</Text>
                     <TextInput style={styles.inputs} placeholder="Km/h" />
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={styles.buttomPequeno}
+                            onPress={() => openGallery()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <Text style={styles.label}>Galones Comprados</Text>
                     <TextInput style={styles.inputs} placeholder="Cant" />
