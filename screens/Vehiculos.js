@@ -19,6 +19,9 @@ import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
 
 export default function Vehiculos(props) {
     const [placas, setPlacas] = useState([]);
+    const [bombaAbastecimiento, setBombaAbastecimiento] = useState([]);
+    const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
+    const [estadosMedicion, setEstadosMedicion] = useState([]);
     const [error, setError] = useState();
 
     const options = [
@@ -74,6 +77,63 @@ export default function Vehiculos(props) {
                             setPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
                         }
                     });
+                fetch(`${API_URL}/bombas-abastecimiento`, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                            setError("Unauthorized");
+                            setBombaAbastecimiento(null);
+                        } else {
+                            setError(null);
+                            setBombaAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
+                        }
+                    });
+
+                fetch(`${API_URL}/sistemas-amortiguacion`, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                            setError("Unauthorized");
+                            setSistemasAmortiguacion(null);
+                        } else {
+                            setError(null);
+                            setSistemasAmortiguacion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                        }
+                    });
+
+                fetch(`${API_URL}/estados-medicion`, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                            setError("Unauthorized");
+                            setEstadosMedicion(null);
+                        } else {
+                            setError(null);
+                            setEstadosMedicion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                        }
+                    });
+
             })
             .done();
 
@@ -106,10 +166,10 @@ export default function Vehiculos(props) {
                     <TextInput style={styles.inputs} placeholder="Cant" />
 
                     <Text style={styles.label}>Bomba Abastecio</Text>
-                    <SelectInput style={styles.select} options={options} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={bombaAbastecimiento} placeholder="Seleccione" />
 
                     <Text style={styles.label}>Sistema de amortiguacion del vehiculo</Text>
-                    <SelectInput style={styles.select} options={options} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" />
 
                     <Text style={styles.label}>
                         Breve explicacion capacitacion de buenas Practicas de hoy.
@@ -120,7 +180,7 @@ export default function Vehiculos(props) {
                         placeholder="Escriba"
                     />
                     <Text style={styles.label}>Estado de Medicion Vehiculo</Text>
-                    <SelectInput style={styles.select} options={options} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" />
 
                     <Text style={styles.label}>Presion de los neumaticos</Text>
                     <TextInput style={styles.inputs} placeholder="Psi" />
