@@ -27,16 +27,18 @@ export default function Vehiculos(props) {
     const [estadosMedicion, setEstadosMedicion] = useState([]);
     const [error, setError] = useState();
     const [noplaca, setNoPlaca] = useState();
-    const [recorridoInicial, setRecorridoInicial] = useState();
-    const [recorridoFinal, setRecorridoFinal] = useState();
-    const [galonesComprados, setGalonesComprados] = useState();
+    const [recorridoInicial, setRecorridoInicial] = useState("");
+    const [recorridoFinal, setRecorridoFinal] = useState("");
+    const [galonesComprados, setGalonesComprados] = useState("");
     const [bombaAbastecimiento, setBombaAbastecimiento] = useState();
     const [sistemaAmortiguacion, setSistemaAmortiguacion] = useState();
-    const [explicacionCapacitacion, setExplicacionCapacitacion] = useState();
+    const [explicacionCapacitacion, setExplicacionCapacitacion] = useState("");
     const [estadoMedicion, setEstadoMedicion] = useState();
-    const [presionNeumaticos, setPresionNeumaticos] = useState()
-
-
+    const [presionNeumaticos, setPresionNeumaticos] = useState("");
+    const [recorridoInicialImagen, setRecorridoInicialImagen] = ("");
+    const [recorridoFinalImagen, setRecorridoFinalImagen] = ("");
+    const [galonesCompradosImagen, setGalonesCompradosImagen] = ("");
+    const [isValidating, setIsValidating] = useState(false);
 
     const openGallery = async () => {
         const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -61,12 +63,16 @@ export default function Vehiculos(props) {
     };
 
     const saveData = async () => {
-        const networkStatus = await Network.getNetworkStateAsync();
-        if (networkStatus.isConnected) {
-            Alert.alert("Esta conectado");
-        } else {
-            Alert.alert("No esta conectado");
-        }
+        // const networkStatus = await Network.getNetworkStateAsync();
+        // if (networkStatus.isConnected) {
+        //     Alert.alert("Esta conectado");
+        // } else {
+        //     Alert.alert("No esta conectado");
+        // }
+
+        setIsValidating(true)
+        // verificar si todo estabien antes
+        console.log("Enviandooooo")
     };
 
     const fetchMyAPI = async () => {
@@ -166,11 +172,17 @@ export default function Vehiculos(props) {
                 <View>
                     <Text style={styles.title}>vehículo</Text>
 
-                    <Text style={styles.label}>No Placa</Text>
-                    <SelectInput style={styles.select} options={noplacas} placeholder="Seleccione" onChange={(text) => setNoPlaca(text)} />
+                    <Text style={styles.label}>{noplaca}No Placa</Text>
+                    <SelectInput style={styles.select} options={noplacas} placeholder="Seleccione" onValueChange={(text) => setNoPlaca(text)} />
+                    {/* {(!noplaca && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(noplaca)) && <Text style={styles.textError}>Campo numérico</Text>} */}
+
+
 
                     <Text style={styles.label}>Recorrido Inicial</Text>
-                    <TextInput style={styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoInicial(text)} />
+                    <TextInput style={((!recorridoInicial || isNaN(recorridoInicial)) && isValidating) ? styles.inputError : styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoInicial(text)} />
+                    {(!recorridoInicial && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(recorridoInicial)) && <Text style={styles.textError}>Campo numérico</Text>}
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
                             style={styles.buttonFile}
@@ -179,9 +191,13 @@ export default function Vehiculos(props) {
                             <Text style={styles.textButton}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
+                    {(!recorridoInicialImagen && isValidating) && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+
 
                     <Text style={styles.label}>Recorrido Final</Text>
-                    <TextInput style={styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoFinal(text)} />
+                    <TextInput style={((!recorridoFinal || isNaN(recorridoFinal)) && isValidating) ? styles.inputError : styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoFinal(text)} />
+                    {(!recorridoFinal && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(recorridoFinal)) && <Text style={styles.textError}>Campo numérico</Text>}
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
                             style={styles.buttonFile}
@@ -190,9 +206,16 @@ export default function Vehiculos(props) {
                             <Text style={styles.textButton}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
+                    {(!recorridoFinalImagen && isValidating) && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+
+
+
+
 
                     <Text style={styles.label}>Galones Comprados</Text>
-                    <TextInput style={styles.inputs} placeholder="Cant" onChangeText={(text) => setGalonesComprados(text)} />
+                    <TextInput style={((!galonesComprados || isNaN(galonesComprados)) && isValidating) ? styles.inputError : styles.inputs} placeholder="Cant" onChangeText={(text) => setGalonesComprados(text)} />
+                    {(!galonesComprados && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(galonesComprados)) && <Text style={styles.textError}>Campo numérico</Text>}
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
                             style={styles.buttonFile}
@@ -201,28 +224,43 @@ export default function Vehiculos(props) {
                             <Text style={styles.textButton}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
+                    {(!galonesCompradosImagen && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+
+
 
                     <Text style={styles.label}>Bomba Abastecio</Text>
-                    <SelectInput style={styles.select} options={bombasAbastecimiento} placeholder="Seleccione" onChange={(text) => setBombaAbastecimiento(text)} />
+                    <SelectInput style={styles.select} options={bombasAbastecimiento} placeholder="Seleccione" onValueChange={(text) => setBombaAbastecimiento(text)} />
+                    {/* {(!bombaAbastecimiento && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(bombaAbastecimiento)) && <Text style={styles.textError}>Campo numérico</Text>} */}
+
+
 
                     <Text style={styles.label}>Sistema de amortiguación del vehículo</Text>
-                    <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" onChange={(text) => setSistemaAmortiguacion(text)} />
+                    <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" onValueChange={(text) => setSistemaAmortiguacion(text)} />
+                    {/* {(!sistemaAmortiguacion && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(sistemaAmortiguacion)) && <Text style={styles.textError}>Campo numérico</Text>} */}
 
-                    <Text style={styles.label}>
-                        Breve explicación capacitación de buenas práctica de hoy.
-					</Text>
-                    <TextInput
-                        style={[styles.inputs, styles.inputArea]}
+
+                    <Text style={styles.label}>Breve explicación capacitación de buenas práctica de hoy.</Text>
+                    <TextInput style={(!explicacionCapacitacion  && isValidating) ? styles.inputAreaError : [styles.inputs, styles.inputArea]}
                         multiline={true}
                         placeholder="Escriba"
                         onChangeText={(text) => setExplicacionCapacitacion(text)}
                     />
+                    {(!explicacionCapacitacion && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+
+
 
                     <Text style={styles.label}>Estado de Medición vehículo</Text>
-                    <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" onChange={(text) => setEstadoMedicion(text)} />
+                    <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" onValueChange={(text) => setEstadoMedicion(text)} />
+                    {/* {(!estadoMedicion && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(estadoMedicion)) && <Text style={styles.textError}>Campo numérico</Text>} */}
+
 
                     <Text style={styles.label}>Presión de los neumático</Text>
-                    <TextInput style={styles.inputs} placeholder="Psi" onChangeText={(text) => setPresionNeumaticos(text)} />
+                    <TextInput style={((!presionNeumaticos || isNaN(presionNeumaticos)) && isValidating) ? styles.inputError : styles.inputs} placeholder="Psi" onChangeText={(text) => setPresionNeumaticos(text)} />
+                    {(!presionNeumaticos && isValidating) && <Text style={styles.textError}>Campo requerido</Text>}
+                    {(isValidating && isNaN(presionNeumaticos)) && <Text style={styles.textError}>Campo numérico</Text>}
 
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
@@ -266,20 +304,48 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         paddingHorizontal: 20,
     },
+    inputError: {
+        borderRadius: 15,
+        borderColor: "rgba(255,0,0,0.7)",
+        borderWidth: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
     select: {
         borderRadius: 15,
         borderColor: "rgba(0,0,0,0.3)",
         borderWidth: 1,
         paddingHorizontal: 20,
     },
+    selectError: {
+        borderRadius: 15,
+        borderColor: "rgba(255,0,0,0.7)",
+        borderWidth: 1,
+        paddingHorizontal: 20,
+    },
     inputArea: {
         minHeight: 140,
+    },
+    inputAreaError: {
+        minHeight: 140,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "rgba(255,0,0,0.7)",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
     },
     label: {
         color: "rgba(0,0,0,0.6)",
         paddingLeft: 10,
         marginTop: 15,
         marginBottom: 5,
+    },
+    textError: {
+        color: "rgba(255,0,0,0.7)",
+    },
+    textErrorRight: {
+        color: "rgba(255,0,0,0.7)",
+        textAlign: "right"
     },
     padreButtom: {
         alignItems: "flex-end",
