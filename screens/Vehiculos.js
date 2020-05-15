@@ -21,11 +21,22 @@ import { Camera } from 'expo-camera';
 
 
 export default function Vehiculos(props) {
-    const [placas, setPlacas] = useState([]);
-    const [bombaAbastecimiento, setBombaAbastecimiento] = useState([]);
+    const [noplacas, setNoPlacas] = useState([]);
+    const [bombasAbastecimiento, setBombasAbastecimiento] = useState([]);
     const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
     const [estadosMedicion, setEstadosMedicion] = useState([]);
     const [error, setError] = useState();
+    const [noplaca, setNoPlaca] = useState();
+    const [recorridoInicial, setRecorridoInicial] = useState();
+    const [recorridoFinal, setRecorridoFinal] = useState();
+    const [galonesComprados, setGalonesComprados] = useState();
+    const [bombaAbastecimiento, setBombaAbastecimiento] = useState();
+    const [sistemaAmortiguacion, setSistemaAmortiguacion] = useState();
+    const [explicacionCapacitacion, setExplicacionCapacitacion] = useState();
+    const [estadoMedicion, setEstadoMedicion] = useState();
+    const [presionNeumaticos, setPresionNeumaticos] = useState()
+
+
 
     const openGallery = async () => {
         const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -73,10 +84,10 @@ export default function Vehiculos(props) {
                     .then(res => {
                         if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
                             setError("Unauthorized");
-                            setPlacas(null);
+                            setNoPlacas(null);
                         } else {
                             setError(null);
-                            setPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
+                            setNoPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
                         }
                     });
                 fetch(`${API_URL}/bombas-abastecimiento`, {
@@ -91,10 +102,10 @@ export default function Vehiculos(props) {
                     .then(res => {
                         if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
                             setError("Unauthorized");
-                            setBombaAbastecimiento(null);
+                            setBombasAbastecimiento(null);
                         } else {
                             setError(null);
-                            setBombaAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
+                            setBombasAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
                         }
                     });
 
@@ -156,16 +167,24 @@ export default function Vehiculos(props) {
                     <Text style={styles.title}>Vehiculos</Text>
 
                     <Text style={styles.label}>No Placas</Text>
-                    <SelectInput style={styles.select} options={placas} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={noplacas} placeholder="Seleccione" onChange={(text) => setNoPlaca(text)} />
 
                     <Text style={styles.label}>Recorrido Inicial</Text>
-                    <TextInput style={styles.inputs} placeholder="Km/h" />
-
-                    <Text style={styles.label}>Recorrido Final</Text>
-                    <TextInput style={styles.inputs} placeholder="Km/h" />
+                    <TextInput style={styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoInicial(text)} />
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
-                            style={styles.buttomPequeno}
+                            style={styles.buttonFile}
+                            onPress={() => openCamera()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.label}>Recorrido Final</Text>
+                    <TextInput style={styles.inputs} placeholder="Km/h" onChangeText={(text) => setRecorridoFinal(text)} />
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={styles.buttonFile}
                             onPress={() => openCamera()}
                         >
                             <Text style={styles.textButton}>Seleccionar archivo</Text>
@@ -173,13 +192,21 @@ export default function Vehiculos(props) {
                     </View>
 
                     <Text style={styles.label}>Galones Comprados</Text>
-                    <TextInput style={styles.inputs} placeholder="Cant" />
+                    <TextInput style={styles.inputs} placeholder="Cant" onChangeText={(text) => setGalonesComprados(text)} />
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={styles.buttonFile}
+                            onPress={() => openCamera()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <Text style={styles.label}>Bomba Abastecio</Text>
-                    <SelectInput style={styles.select} options={bombaAbastecimiento} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={bombasAbastecimiento} placeholder="Seleccione" onChange={(text) => setBombaAbastecimiento(text)} />
 
                     <Text style={styles.label}>Sistema de amortiguacion del vehiculo</Text>
-                    <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" onChange={(text) => setSistemaAmortiguacion(text)} />
 
                     <Text style={styles.label}>
                         Breve explicacion capacitacion de buenas Practicas de hoy.
@@ -188,19 +215,21 @@ export default function Vehiculos(props) {
                         style={[styles.inputs, styles.inputArea]}
                         multiline={true}
                         placeholder="Escriba"
+                        onChangeText={(text) => setExplicacionCapacitacion(text)}
                     />
+
                     <Text style={styles.label}>Estado de Medicion Vehiculo</Text>
-                    <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" />
+                    <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" onChange={(text) => setEstadoMedicion(text)} />
 
                     <Text style={styles.label}>Presion de los neumaticos</Text>
-                    <TextInput style={styles.inputs} placeholder="Psi" />
+                    <TextInput style={styles.inputs} placeholder="Psi" onChangeText={(text) => setPresionNeumaticos(text)} />
 
                     <View style={styles.padreButtom}>
                         <TouchableOpacity
                             style={styles.buttomPequeno}
                             onPress={() => saveData()}
                         >
-                            <Text style={styles.textButton}>Siguiente</Text>
+                            <Text style={styles.textButton}>Enviar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -255,11 +284,18 @@ const styles = StyleSheet.create({
     padreButtom: {
         alignItems: "flex-end",
     },
+    buttonFile: {
+        backgroundColor: "rgba(44, 84, 151,0.7)",
+        marginVertical: 10,
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+    },
     buttomPequeno: {
         backgroundColor: "#b7c62f",
         borderRadius: 20,
         padding: 10,
-        width: 150,
+        paddingHorizontal: 30,
         marginVertical: 25,
     },
     textButton: {
