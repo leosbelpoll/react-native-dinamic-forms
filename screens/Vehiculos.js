@@ -164,9 +164,9 @@ export default function Vehiculos(props) {
                 contentContainerStyle={styles.contentContainer}
             >
                 <View>
-                    <Text style={styles.title}>Vehiculos</Text>
+                    <Text style={styles.title}>vehículo</Text>
 
-                    <Text style={styles.label}>No Placas</Text>
+                    <Text style={styles.label}>No Placa</Text>
                     <SelectInput style={styles.select} options={noplacas} placeholder="Seleccione" onChange={(text) => setNoPlaca(text)} />
 
                     <Text style={styles.label}>Recorrido Inicial</Text>
@@ -205,11 +205,11 @@ export default function Vehiculos(props) {
                     <Text style={styles.label}>Bomba Abastecio</Text>
                     <SelectInput style={styles.select} options={bombasAbastecimiento} placeholder="Seleccione" onChange={(text) => setBombaAbastecimiento(text)} />
 
-                    <Text style={styles.label}>Sistema de amortiguacion del vehiculo</Text>
+                    <Text style={styles.label}>Sistema de amortiguación del vehículo</Text>
                     <SelectInput style={styles.select} options={sistemasAmortiguacion} placeholder="Seleccione" onChange={(text) => setSistemaAmortiguacion(text)} />
 
                     <Text style={styles.label}>
-                        Breve explicacion capacitacion de buenas Practicas de hoy.
+                        Breve explicación capacitación de buenas práctica de hoy.
 					</Text>
                     <TextInput
                         style={[styles.inputs, styles.inputArea]}
@@ -218,10 +218,10 @@ export default function Vehiculos(props) {
                         onChangeText={(text) => setExplicacionCapacitacion(text)}
                     />
 
-                    <Text style={styles.label}>Estado de Medicion Vehiculo</Text>
+                    <Text style={styles.label}>Estado de Medición vehículo</Text>
                     <SelectInput style={styles.select} options={estadosMedicion} placeholder="Seleccione" onChange={(text) => setEstadoMedicion(text)} />
 
-                    <Text style={styles.label}>Presion de los neumaticos</Text>
+                    <Text style={styles.label}>Presión de los neumático</Text>
                     <TextInput style={styles.inputs} placeholder="Psi" onChangeText={(text) => setPresionNeumaticos(text)} />
 
                     <View style={styles.padreButtom}>
