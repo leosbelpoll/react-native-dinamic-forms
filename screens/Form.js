@@ -15,6 +15,7 @@ import {
 import { ScrollView } from "react-native-gesture-handler";
 
 import { MonoText } from "../components/StyledText";
+import Header from "../components/Header";
 
 export default function Form(props) {
 	const saveData = async () => {
@@ -30,6 +31,7 @@ export default function Form(props) {
 	};
 	return (
 		<View style={styles.container}>
+			<Header {...props} />
 			<ScrollView
 				style={styles.container}
 				contentContainerStyle={styles.contentContainer}

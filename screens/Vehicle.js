@@ -1,0 +1,501 @@
+import React, { useEffect, useState } from "react";
+import * as Network from "expo-network";
+import { StyleSheet, Text, TouchableOpacity, View, TextInput, AsyncStorage, Alert } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+
+import { API_URL, ACCESS_TOKEN_IDENTIFIER, USER_NAME } from "../configs";
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from "expo-permissions";
+import { Camera } from "expo-camera";
+import { Picker } from "@react-native-community/picker";
+import Header from "../components/Header";
+import Loading from "./Loading";
+
+export default function Vehicle(props) {
+    const { standard, project } = props.route.params;
+    const [token, setToken] = useState([]);
+    const [noplacas, setNoPlacas] = useState([]);
+    const [bombasAbastecimiento, setBombasAbastecimiento] = useState([]);
+    const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
+    const [estadosMedicion, setEstadosMedicion] = useState([]);
+    const [error, setError] = useState();
+    const [noplaca, setNoPlaca] = useState();
+    const [recorridoInicial, setRecorridoInicial] = useState("");
+    const [recorridoFinal, setRecorridoFinal] = useState("");
+    const [galonesComprados, setGalonesComprados] = useState("");
+    const [bombaAbastecimiento, setBombaAbastecimiento] = useState();
+    const [sistemaAmortiguacion, setSistemaAmortiguacion] = useState();
+    const [explicacionCapacitacion, setExplicacionCapacitacion] = useState("");
+    const [estadoMedicion, setEstadoMedicion] = useState();
+    const [presionNeumaticos, setPresionNeumaticos] = useState("");
+    const [recorridoInicialImagen, setRecorridoInicialImagen] = useState("");
+    const [recorridoFinalImagen, setRecorridoFinalImagen] = useState("");
+    const [galonesCompradosImagen, setGalonesCompradosImagen] = useState("");
+    const [isValidating, setIsValidating] = useState(false);
+    const [isInvalidForm, setIsInvalidForm] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const openGallery = async () => {
+        const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+        if (resultPermission) {
+            const resultImagePiker = await ImagePicker.launchImageLibraryAsync({
+                allowsEditing: true,
+            });
+            return resultImagePiker;
+        }
+    };
+
+    const openGalleryRecorridoInicial = async () => {
+        const value = await openGallery();
+        setRecorridoInicialImagen(value.uri);
+    };
+
+    const openGalleryRecorridoFinal = async () => {
+        const value = await openGallery();
+        setRecorridoFinalImagen(value.uri);
+    };
+
+    const openGalleryGalonesComprados = async () => {
+        const value = await openGallery();
+        setGalonesCompradosImagen(value.uri);
+    };
+
+    const openCamera = async () => {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+
+        if (status === "granted") {
+            props.navigation.navigate("Camera");
+        } else {
+            Alert.alert("La app no tiene permisos para usar la camara");
+        }
+    };
+
+    const getFile = uri => {
+        let localUri = uri;
+        let filename = localUri.split("/").pop();
+
+        // Infer the type of the image
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+
+        return { uri: localUri, name: filename, type };
+    };
+
+    const saveData = async () => {
+        if (
+            !recorridoInicial ||
+            !recorridoFinal ||
+            !galonesComprados ||
+            !explicacionCapacitacion ||
+            !presionNeumaticos ||
+            !recorridoInicialImagen ||
+            !recorridoFinalImagen ||
+            !galonesCompradosImagen
+        ) {
+            setIsValidating(true);
+            setIsInvalidForm(true);
+        } else {
+            setIsInvalidForm(false);
+            setLoading(true);
+            AsyncStorage.getItem(USER_NAME)
+                .then(username => {
+                    let formData = new FormData();
+                    formData.append("username", username);
+                    formData.append("project_id", project.id);
+                    formData.append("standard_id", standard.id);
+                    formData.append("no_placa_id", noplaca || noplacas[0].value);
+                    formData.append("recorrido_inicial", recorridoInicial);
+                    formData.append("recorrido_final", recorridoFinal);
+                    formData.append("galones_comprados", galonesComprados);
+                    formData.append("bomba_abastecimiento_id", bombaAbastecimiento || bombasAbastecimiento[0].value);
+                    formData.append("sistema_amortiguacion_id", sistemaAmortiguacion || sistemasAmortiguacion[0].value);
+                    formData.append("explicacion_capacitacion", explicacionCapacitacion);
+                    formData.append("estado_medicion_id", estadoMedicion || estadosMedicion[0].value);
+                    formData.append("presion_neumaticos", presionNeumaticos);
+                    formData.append("recorrido_inicial_image", getFile(recorridoInicialImagen));
+                    formData.append("recorrido_final_image", getFile(recorridoFinalImagen));
+                    formData.append("galones_comprados_image", getFile(galonesCompradosImagen));
+                    fetch(`${API_URL}/vehicles`, {
+                        method: "POST",
+                        body: formData,
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "multipart/form-data",
+                            Authorization: `Bearer ${token}`,
+                        },
+                    })
+                        .then(res => res.json())
+                        .then(res => {
+                            if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                                setError("Unauthorized");
+                                setIsInvalidForm(true);
+                                setLoading(false);
+                            } else {
+                                setError(null);
+                                props.navigation.navigate("Projects", {
+                                    project,
+                                    standard,
+                                    username,
+                                    notification: { type: "success", message: `Vehículo creado correctamente` },
+                                });
+                                setLoading(false);
+                            }
+                        });
+                })
+                .done();
+        }
+    };
+
+    const fetchMyAPI = async () => {
+        setLoading(true);
+        AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
+            .then(token => {
+                setToken(token);
+                fetch(`${API_URL}/no-placas`, {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
+                    .then(res => res.json())
+                    .then(res => {
+                        if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                            setError("Unauthorized");
+                            setNoPlacas(null);
+                        } else {
+                            setError(null);
+                            setNoPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
+                            if (noplacas.length) {
+                                console.log("PASEEE oplacas");
+                                setNoPlaca(noplacas[0].value);
+                            }
+
+                            fetch(`${API_URL}/bombas-abastecimiento`, {
+                                method: "GET",
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${token}`,
+                                },
+                            })
+                                .then(res => res.json())
+                                .then(res => {
+                                    if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                                        setError("Unauthorized");
+                                        setBombasAbastecimiento(null);
+                                    } else {
+                                        setError(null);
+                                        setBombasAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                        if (bombasAbastecimiento.length) {
+                                            console.log("PASEEE tecimiento");
+                                            setBombaAbastecimiento(bombasAbastecimiento[0].value);
+                                        }
+
+                                        fetch(`${API_URL}/sistemas-amortiguacion`, {
+                                            method: "GET",
+                                            headers: {
+                                                Accept: "application/json",
+                                                "Content-Type": "application/json",
+                                                Authorization: `Bearer ${token}`,
+                                            },
+                                        })
+                                            .then(res => res.json())
+                                            .then(res => {
+                                                if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                                                    setError("Unauthorized");
+                                                    setSistemasAmortiguacion(null);
+                                                } else {
+                                                    setError(null);
+                                                    setSistemasAmortiguacion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                                    if (sistemasAmortiguacion.length) {
+                                                        console.log("PASEEE ortiguacion");
+                                                        setSistemaAmortiguacion(sistemasAmortiguacion[0].value);
+                                                    }
+
+                                                    fetch(`${API_URL}/estados-medicion`, {
+                                                        method: "GET",
+                                                        headers: {
+                                                            Accept: "application/json",
+                                                            "Content-Type": "application/json",
+                                                            Authorization: `Bearer ${token}`,
+                                                        },
+                                                    })
+                                                        .then(res => res.json())
+                                                        .then(res => {
+                                                            if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                                                                setError("Unauthorized");
+                                                                setEstadosMedicion(null);
+                                                            } else {
+                                                                setError(null);
+                                                                setEstadosMedicion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                                                if (estadosMedicion.length) {
+                                                                    console.log("PASEEE icion");
+                                                                    setEstadoMedicion(estadosMedicion[0].value);
+                                                                }
+
+                                                                setLoading(false);
+                                                            }
+                                                        });
+                                                }
+                                            });
+                                    }
+                                });
+                        }
+                    });
+            })
+            .done();
+    };
+
+    useEffect(() => {
+        fetchMyAPI();
+    }, []);
+
+    if (loading) {
+        return <Loading />;
+    }
+
+    return (
+        <View style={styles.container}>
+            <Header {...props} />
+            <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+                <View>
+                    <Text style={styles.title}>{standard.name}</Text>
+
+                    <Text style={styles.label}>No Placa</Text>
+                    <View style={styles.select}>
+                        <Picker onValueChange={itemValue => setNoPlaca(itemValue)} selectedValue={noplaca}>
+                            {noplacas.map(item => (
+                                <Picker.Item key={item.value} label={item.label} value={item.value} />
+                            ))}
+                        </Picker>
+                    </View>
+
+                    <Text style={styles.label}>Recorrido Inicial</Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        style={(!recorridoInicial || isNaN(recorridoInicial)) && isValidating ? styles.inputError : styles.inputs}
+                        placeholder="Km/h"
+                        onChangeText={text => setRecorridoInicial(text)}
+                        value={recorridoInicial}
+                    />
+                    {!recorridoInicial && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
+                    {isValidating && isNaN(recorridoInicial) && <Text style={styles.textError}>Campo numérico</Text>}
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={recorridoInicialImagen ? styles.buttonFile : styles.buttonEmptyFile}
+                            onPress={() => openGalleryRecorridoInicial()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {!recorridoInicialImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+
+                    <Text style={styles.label}>Recorrido Final</Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        style={(!recorridoFinal || isNaN(recorridoFinal)) && isValidating ? styles.inputError : styles.inputs}
+                        placeholder="Km/h"
+                        onChangeText={text => setRecorridoFinal(text)}
+                        value={recorridoFinal}
+                    />
+                    {!recorridoFinal && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
+                    {isValidating && isNaN(recorridoFinal) && <Text style={styles.textError}>Campo numérico</Text>}
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={recorridoFinalImagen ? styles.buttonFile : styles.buttonEmptyFile}
+                            onPress={() => openGalleryRecorridoFinal()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {!recorridoFinalImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+
+                    <Text style={styles.label}>Galones Comprados</Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        style={(!galonesComprados || isNaN(galonesComprados)) && isValidating ? styles.inputError : styles.inputs}
+                        placeholder="Cant"
+                        onChangeText={text => setGalonesComprados(text)}
+                        value={galonesComprados}
+                    />
+                    {!galonesComprados && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
+                    {isValidating && isNaN(galonesComprados) && <Text style={styles.textError}>Campo numérico</Text>}
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity
+                            style={galonesCompradosImagen ? styles.buttonFile : styles.buttonEmptyFile}
+                            onPress={() => openGalleryGalonesComprados()}
+                        >
+                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {!galonesCompradosImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+
+                    <Text style={styles.label}>Bomba de Abastecimiento</Text>
+                    <View style={styles.select}>
+                        <Picker onValueChange={itemValue => setBombaAbastecimiento(itemValue)} selectedValue={bombaAbastecimiento}>
+                            {bombasAbastecimiento.map(item => (
+                                <Picker.Item key={item.value} label={item.label} value={item.value} />
+                            ))}
+                        </Picker>
+                    </View>
+
+                    <Text style={styles.label}>Sistema de amortiguación del vehículo</Text>
+                    <View style={styles.select}>
+                        <Picker onValueChange={itemValue => setSistemaAmortiguacion(itemValue)} selectedValue={sistemaAmortiguacion}>
+                            {sistemasAmortiguacion.map(item => (
+                                <Picker.Item key={item.value} label={item.label} value={item.value} />
+                            ))}
+                        </Picker>
+                    </View>
+
+                    <Text style={styles.label}>Breve explicación capacitación de buenas práctica de hoy.</Text>
+                    <TextInput
+                        style={!explicacionCapacitacion && isValidating ? styles.inputAreaError : [styles.inputs, styles.inputArea]}
+                        multiline={true}
+                        placeholder="Escriba"
+                        onChangeText={text => setExplicacionCapacitacion(text)}
+                        value={explicacionCapacitacion}
+                    />
+                    {!explicacionCapacitacion && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
+
+                    <Text style={styles.label}>Estado de Medición vehículo</Text>
+                    <View style={styles.select}>
+                        <Picker onValueChange={itemValue => setEstadoMedicion(itemValue)} selectedValue={estadoMedicion}>
+                            {estadosMedicion.map(item => (
+                                <Picker.Item key={item.value} label={item.label} value={item.value} />
+                            ))}
+                        </Picker>
+                    </View>
+                    <Text style={styles.label}>Presión de los neumático</Text>
+                    <TextInput
+                        keyboardType="numeric"
+                        style={(!presionNeumaticos || isNaN(presionNeumaticos)) && isValidating ? styles.inputError : styles.inputs}
+                        placeholder="Psi"
+                        onChangeText={text => setPresionNeumaticos(text)}
+                        value={presionNeumaticos}
+                    />
+                    {!presionNeumaticos && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
+                    {isValidating && isNaN(presionNeumaticos) && <Text style={styles.textError}>Campo numérico</Text>}
+
+                    <View style={styles.padreButtom}>
+                        <TouchableOpacity style={styles.buttomPequeno} onPress={() => saveData()}>
+                            <Text style={styles.textButton}>Enviar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+            {isInvalidForm && <Text style={styles.alertError}>Error! Verifique los campos del formulario</Text>}
+        </View>
+    );
+}
+
+Vehicle.navigationOptions = {
+    name: "Vehicle",
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "white",
+    },
+    contentContainer: {
+        paddingTop: 30,
+        paddingHorizontal: 35,
+        paddingBottom: 130,
+    },
+    title: {
+        fontSize: 25,
+        textAlign: "center",
+    },
+    subtitle: {
+        color: "rgba(0,0,0,0.6)",
+    },
+    inputs: {
+        borderRadius: 15,
+        borderColor: "rgba(0,0,0,0.3)",
+        borderWidth: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
+    inputError: {
+        borderRadius: 15,
+        borderColor: "rgba(255,0,0,0.7)",
+        borderWidth: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
+    select: {
+        borderRadius: 15,
+        borderColor: "rgba(0,0,0,0.3)",
+        borderWidth: 1,
+        paddingHorizontal: 20,
+    },
+    selectError: {
+        borderRadius: 15,
+        borderColor: "rgba(255,0,0,0.7)",
+        borderWidth: 1,
+        paddingHorizontal: 20,
+    },
+    inputArea: {
+        minHeight: 140,
+    },
+    inputAreaError: {
+        minHeight: 140,
+        borderRadius: 15,
+        borderWidth: 1,
+        borderColor: "rgba(255,0,0,0.7)",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+    },
+    label: {
+        color: "rgba(0,0,0,0.6)",
+        paddingLeft: 10,
+        marginTop: 15,
+        marginBottom: 5,
+    },
+    textError: {
+        color: "rgba(255,0,0,0.7)",
+    },
+    alertError: {
+        backgroundColor: "red",
+        color: "white",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        textAlign: "center",
+    },
+    textErrorRight: {
+        color: "rgba(255,0,0,0.7)",
+        textAlign: "right",
+    },
+    padreButtom: {
+        alignItems: "flex-end",
+    },
+    buttonEmptyFile: {
+        backgroundColor: "rgba(0, 0, 0,0.4)",
+        marginVertical: 10,
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+    },
+    buttonFile: {
+        backgroundColor: "rgba(44, 84, 151,0.7)",
+        marginVertical: 10,
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+    },
+    buttomPequeno: {
+        backgroundColor: "#b7c62f",
+        borderRadius: 20,
+        padding: 10,
+        paddingHorizontal: 30,
+        marginVertical: 25,
+    },
+    textButton: {
+        color: "white",
+        textAlign: "center",
+    },
+});

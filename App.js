@@ -11,9 +11,8 @@ import Projects from "./screens/Projects";
 import Standards from "./screens/Standards";
 import SubStandards from "./screens/SubStandards";
 import Form from "./screens/Form";
-import Header from "./components/Header";
 import Footer from "./components/Footer";
-import Vehiculos from "./screens/Vehiculos";
+import Vehicle from "./screens/Vehicle";
 import Camera from "./screens/Camera";
 
 const Stack = createStackNavigator();
@@ -50,18 +49,18 @@ export default function App(props) {
 		return (
 			<View style={styles.container}>
 				{/* {Platform.OS === "ios" && <StatusBar barStyle="dark-content" />} */}
-				<Header />
 				<NavigationContainer>
 					<Stack.Navigator
 						screenOptions={{
 							headerShown: false
 						}}
+						initialRouteName='Login'
 					>
-						<Stack.Screen name="Vehiculos" component={Vehiculos} />
 						<Stack.Screen name="Login" component={Login} />
 						<Stack.Screen name="Projects" component={Projects} />
 						<Stack.Screen name="Standards" component={Standards} />
 						<Stack.Screen name="Camera" component={Camera} />
+						<Stack.Screen name="Vehicle" component={Vehicle} />
 						<Stack.Screen
 							name="SubStandards"
 							component={SubStandards}

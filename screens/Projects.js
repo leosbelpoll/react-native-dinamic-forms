@@ -3,9 +3,13 @@ import { Text, TouchableOpacity, View, AsyncStorage } from "react-native";
 import styles from "../styles";
 import { ScrollView } from "react-native-gesture-handler";
 import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
+import Header from "../components/Header";
+import Loading from "./Loading";
 
 export default function Projects(props) {
+    const { navigation } = props;
     const [projects, setProjects] = useState();
+    const [notification, setNotification] = useState();
     const [error, setError] = useState();
     const [loading, setLoading] = useState(false);
 
@@ -26,22 +30,35 @@ export default function Projects(props) {
                         if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
                             setError("Unauthorized");
                             setProjects(null);
+                            setLoading(false);
                         } else {
                             setError(null);
                             setProjects(res);
+                            setLoading(false);
                         }
                     });
-                setLoading(false);
+                
             })
             .done();
     };
 
     useEffect(() => {
+        const { route } = props;
+        // let isThere = false;
+        if (route.params && route.params.notification) {
+            setNotification(route.params.notification);
+            // isThere = true;
+        }
         fetchMyAPI();
     }, []);
 
+    if (loading) {
+        return <Loading />
+    }
+
     return (
         <View style={styles.container}>
+            <Header {...props} />
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige un Projecto</Text>
@@ -64,6 +81,7 @@ export default function Projects(props) {
                         ))}
                 </View>
             </ScrollView>
+            {notification && <Text style={notification.type === "success" ? styles.notificationSuccess : styles.notificationError} onPress={() => setNotification(null)}>{notification.message}</Text>}
         </View>
     );
 }
