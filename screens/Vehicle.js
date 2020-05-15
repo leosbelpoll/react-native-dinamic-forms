@@ -139,7 +139,6 @@ export default function Vehicle(props) {
                                     username,
                                     notification: { type: "success", message: `Vehículo creado correctamente` },
                                 });
-                                setLoading(false);
                             }
                         });
                 })
@@ -169,7 +168,6 @@ export default function Vehicle(props) {
                             setError(null);
                             setNoPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
                             if (noplacas.length) {
-                                console.log("PASEEE oplacas");
                                 setNoPlaca(noplacas[0].value);
                             }
 
@@ -190,7 +188,6 @@ export default function Vehicle(props) {
                                         setError(null);
                                         setBombasAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
                                         if (bombasAbastecimiento.length) {
-                                            console.log("PASEEE tecimiento");
                                             setBombaAbastecimiento(bombasAbastecimiento[0].value);
                                         }
 
@@ -211,7 +208,6 @@ export default function Vehicle(props) {
                                                     setError(null);
                                                     setSistemasAmortiguacion(res.map(obj => ({ value: obj.id, label: obj.name })));
                                                     if (sistemasAmortiguacion.length) {
-                                                        console.log("PASEEE ortiguacion");
                                                         setSistemaAmortiguacion(sistemasAmortiguacion[0].value);
                                                     }
 
@@ -232,7 +228,6 @@ export default function Vehicle(props) {
                                                                 setError(null);
                                                                 setEstadosMedicion(res.map(obj => ({ value: obj.id, label: obj.name })));
                                                                 if (estadosMedicion.length) {
-                                                                    console.log("PASEEE icion");
                                                                     setEstadoMedicion(estadosMedicion[0].value);
                                                                 }
 
@@ -260,6 +255,7 @@ export default function Vehicle(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {isInvalidForm && <Text style={styles.alertError}>Error! Verifique los campos del formulario</Text>}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>{standard.name}</Text>
@@ -387,7 +383,6 @@ export default function Vehicle(props) {
                     </View>
                 </View>
             </ScrollView>
-            {isInvalidForm && <Text style={styles.alertError}>Error! Verifique los campos del formulario</Text>}
         </View>
     );
 }
@@ -404,7 +399,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         paddingTop: 30,
         paddingHorizontal: 35,
-        paddingBottom: 130,
+        paddingBottom: 10,
     },
     title: {
         fontSize: 25,

@@ -8,6 +8,7 @@ import Loading from "./Loading";
 
 export default function Projects(props) {
     const { navigation } = props;
+    const { route } = props;
     const [projects, setProjects] = useState();
     const [notification, setNotification] = useState();
     const [error, setError] = useState();
@@ -37,28 +38,32 @@ export default function Projects(props) {
                             setLoading(false);
                         }
                     });
-                
             })
             .done();
     };
 
     useEffect(() => {
-        const { route } = props;
-        // let isThere = false;
         if (route.params && route.params.notification) {
             setNotification(route.params.notification);
-            // isThere = true;
         }
         fetchMyAPI();
-    }, []);
+    }, [route]);
 
     if (loading) {
-        return <Loading />
+        return <Loading />;
     }
 
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {notification && (
+                <Text
+                    style={notification.type === "success" ? styles.notificationSuccess : styles.notificationError}
+                    onPress={() => setNotification(null)}
+                >
+                    {notification.message}
+                </Text>
+            )}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige un Projecto</Text>
@@ -70,18 +75,18 @@ export default function Projects(props) {
                             <TouchableOpacity
                                 key={project.id}
                                 style={styles.buttom}
-                                onPress={() =>
+                                onPress={() => {
                                     props.navigation.navigate("Standards", {
-										project
-                                    })
-                                }
+                                        project,
+                                    });
+                                    setNotification(null);
+                                }}
                             >
                                 <Text style={styles.textButton}>{project.name}</Text>
                             </TouchableOpacity>
                         ))}
                 </View>
             </ScrollView>
-            {notification && <Text style={notification.type === "success" ? styles.notificationSuccess : styles.notificationError} onPress={() => setNotification(null)}>{notification.message}</Text>}
         </View>
     );
 }

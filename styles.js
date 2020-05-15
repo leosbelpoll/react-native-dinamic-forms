@@ -81,14 +81,14 @@ export default StyleSheet.create({
 		paddingBottom:8,
 	},
 	notificationSuccess: {
-        backgroundColor: "green",
+        backgroundColor: "rgba(133, 145, 54, 1)",
         color: "white",
         paddingHorizontal: 20,
         paddingVertical: 10,
         textAlign: "center",
     },
 	notificationError: {
-        backgroundColor: "red",
+        backgroundColor: "rgba(117, 22, 25, 1)",
         color: "white",
         paddingHorizontal: 20,
         paddingVertical: 10,
