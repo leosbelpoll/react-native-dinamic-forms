@@ -56,6 +56,7 @@ export default function Projects(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>}
             {notification && (
                 <Text
                     style={notification.type === "success" ? styles.notificationSuccess : styles.notificationError}
@@ -67,8 +68,6 @@ export default function Projects(props) {
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige un Projecto</Text>
-                    {loading && <Text>Loading ...</Text>}
-                    {error && <Text style={styles.textError}>Error cargando elementos.</Text>}
                     {(!projects || !projects.length) && !error && <Text>No hay elementos.</Text>}
                     {projects &&
                         projects.map(project => (

@@ -51,11 +51,10 @@ export default function Standards(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige la Norma ISO</Text>
-                    {loading && <Text>Loading ...</Text>}
-                    {error && <Text style={styles.textError}>Error cargando elementos.</Text>}
                     {(!standards || !standards.length) && !error && <Text>No hay elementos.</Text>}
                     {standards &&
                         standards.map(standard => (

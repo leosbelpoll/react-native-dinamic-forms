@@ -58,11 +58,10 @@ export default function SubStandards(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige</Text>
-                    {loading && <Text>Loading ...</Text>}
-                    {error && <Text style={styles.textError}>Error cargando elementos.</Text>}
                     {(!substandards || !substandards.length) && !error && <Text>No hay elementos. AQUI DEBE IR UN FORMULARIO</Text>}
                     {substandards &&
                         substandards.map(substandard => (

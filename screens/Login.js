@@ -8,12 +8,18 @@ import Loading from "./Loading";
 
 export default function Login(props) {
     const [error, setError] = useState();
+    const [validating, isValidating] = useState(false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState();
     const [password, setPassword] = useState();
     const { route } = props;
 
     const onLogin = async () => {
+        if (!username || !password) {
+            isValidating(true);
+            return;
+        }
+        isValidating(false);
         setLoading(true);
         setError(null);
         fetch(`${API_URL}/auth/login`, {
@@ -82,22 +88,32 @@ export default function Login(props) {
                 paddingTop: 100,
             }}
         >
+            {error && <Text style={styles.notificationError} onPress={() => setError(null)}>Usuario o contraseña incorrecta.</Text>}
+            {validating && (!username || !password) && <Text style={styles.notificationError} onPress={() => isValidating(false)}>Valide los campos del formulario.</Text>}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}> Inicio de Sesión </Text>
-
-                    {error && <Text style={styles.textError}>Usuario o contraseña incorrecta.</Text>}
-
-                    <TextInput style={styles.inputs} placeholder="Usuario" onChangeText={text => setUsername(text)} value={username} />
-
                     <TextInput
-                        style={styles.inputs}
+                        style={(validating && !username) ? styles.inputError : styles.inputs}
+                        placeholder="Usuario"
+                        onChangeText={text => {
+                            setUsername(text);
+                            setError(null);
+                        }}
+                        value={username}
+                    />
+                    {validating && !username && <Text style={styles.textError}>Campo requerido</Text>}
+                    <TextInput
+                        style={[(validating && !password) ? styles.inputError : styles.inputs, {marginTop: 20}]}
                         placeholder="Contraseña"
                         secureTextEntry={true}
-                        onChangeText={pass => setPassword(pass)}
+                        onChangeText={pass => {
+                            setPassword(pass);
+                            setError(null);
+                        }}
                         value={password}
                     />
-
+                    {validating && !password && <Text style={styles.textError}>Campo requerido</Text>}
                     <TouchableOpacity style={styles.buttom} onPress={() => onLogin()}>
                         <Text style={styles.textButton}>{loading ? "Loading ..." : "Iniciar Sesión"}</Text>
                     </TouchableOpacity>

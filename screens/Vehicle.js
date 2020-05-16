@@ -10,6 +10,7 @@ import { Camera } from "expo-camera";
 import { Picker } from "@react-native-community/picker";
 import Header from "../components/Header";
 import Loading from "./Loading";
+import styles from "../styles";
 
 export default function Vehicle(props) {
     const { standard, project } = props.route.params;
@@ -230,8 +231,6 @@ export default function Vehicle(props) {
                                                                 if (estadosMedicion.length) {
                                                                     setEstadoMedicion(estadosMedicion[0].value);
                                                                 }
-
-                                                                setLoading(false);
                                                             }
                                                         });
                                                 }
@@ -239,7 +238,8 @@ export default function Vehicle(props) {
                                     }
                                 });
                         }
-                    });
+                    })
+                    .finally(() => setLoading(false));
             })
             .done();
     };
@@ -255,8 +255,8 @@ export default function Vehicle(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
-            {isInvalidForm && <Text style={styles.alertError}>Error! Verifique los campos del formulario</Text>}
-            <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            {isInvalidForm && <Text style={styles.notificationError}>Verifique los campos del formulario.</Text>}
+            <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerForm}>
                 <View>
                     <Text style={styles.title}>{standard.name}</Text>
 
@@ -279,15 +279,15 @@ export default function Vehicle(props) {
                     />
                     {!recorridoInicial && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
                     {isValidating && isNaN(recorridoInicial) && <Text style={styles.textError}>Campo numérico</Text>}
-                    <View style={styles.padreButtom}>
+                    <View style={styles.floatRight}>
                         <TouchableOpacity
                             style={recorridoInicialImagen ? styles.buttonFile : styles.buttonEmptyFile}
                             onPress={() => openGalleryRecorridoInicial()}
                         >
-                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                            <Text style={styles.textLight}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
-                    {!recorridoInicialImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+                    {!recorridoInicialImagen && isValidating && <Text style={[styles.textRight, styles.textError]}>Imágen requerida</Text>}
 
                     <Text style={styles.label}>Recorrido Final</Text>
                     <TextInput
@@ -299,15 +299,15 @@ export default function Vehicle(props) {
                     />
                     {!recorridoFinal && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
                     {isValidating && isNaN(recorridoFinal) && <Text style={styles.textError}>Campo numérico</Text>}
-                    <View style={styles.padreButtom}>
+                    <View style={styles.floatRight}>
                         <TouchableOpacity
                             style={recorridoFinalImagen ? styles.buttonFile : styles.buttonEmptyFile}
                             onPress={() => openGalleryRecorridoFinal()}
                         >
-                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                            <Text style={styles.textLight}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
-                    {!recorridoFinalImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+                    {!recorridoFinalImagen && isValidating && <Text style={[styles.textRight, styles.textError]}>Imágen requerida</Text>}
 
                     <Text style={styles.label}>Galones Comprados</Text>
                     <TextInput
@@ -319,15 +319,15 @@ export default function Vehicle(props) {
                     />
                     {!galonesComprados && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
                     {isValidating && isNaN(galonesComprados) && <Text style={styles.textError}>Campo numérico</Text>}
-                    <View style={styles.padreButtom}>
+                    <View style={styles.floatRight}>
                         <TouchableOpacity
                             style={galonesCompradosImagen ? styles.buttonFile : styles.buttonEmptyFile}
                             onPress={() => openGalleryGalonesComprados()}
                         >
-                            <Text style={styles.textButton}>Seleccionar archivo</Text>
+                            <Text style={styles.textLight}>Seleccionar archivo</Text>
                         </TouchableOpacity>
                     </View>
-                    {!galonesCompradosImagen && isValidating && <Text style={styles.textErrorRight}>Campo requerido</Text>}
+                    {!galonesCompradosImagen && isValidating && <Text style={[styles.textRight, styles.textError]}>Imágen requerida</Text>}
 
                     <Text style={styles.label}>Bomba de Abastecimiento</Text>
                     <View style={styles.select}>
@@ -376,9 +376,9 @@ export default function Vehicle(props) {
                     {!presionNeumaticos && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
                     {isValidating && isNaN(presionNeumaticos) && <Text style={styles.textError}>Campo numérico</Text>}
 
-                    <View style={styles.padreButtom}>
-                        <TouchableOpacity style={styles.buttomPequeno} onPress={() => saveData()}>
-                            <Text style={styles.textButton}>Enviar</Text>
+                    <View style={styles.floatRight}>
+                        <TouchableOpacity style={styles.buttomAction} onPress={() => saveData()}>
+                            <Text style={styles.textLight}>Enviar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -390,107 +390,3 @@ export default function Vehicle(props) {
 Vehicle.navigationOptions = {
     name: "Vehicle",
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "white",
-    },
-    contentContainer: {
-        paddingTop: 30,
-        paddingHorizontal: 35,
-        paddingBottom: 10,
-    },
-    title: {
-        fontSize: 25,
-        textAlign: "center",
-    },
-    subtitle: {
-        color: "rgba(0,0,0,0.6)",
-    },
-    inputs: {
-        borderRadius: 15,
-        borderColor: "rgba(0,0,0,0.3)",
-        borderWidth: 1,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-    inputError: {
-        borderRadius: 15,
-        borderColor: "rgba(255,0,0,0.7)",
-        borderWidth: 1,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-    select: {
-        borderRadius: 15,
-        borderColor: "rgba(0,0,0,0.3)",
-        borderWidth: 1,
-        paddingHorizontal: 20,
-    },
-    selectError: {
-        borderRadius: 15,
-        borderColor: "rgba(255,0,0,0.7)",
-        borderWidth: 1,
-        paddingHorizontal: 20,
-    },
-    inputArea: {
-        minHeight: 140,
-    },
-    inputAreaError: {
-        minHeight: 140,
-        borderRadius: 15,
-        borderWidth: 1,
-        borderColor: "rgba(255,0,0,0.7)",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-    },
-    label: {
-        color: "rgba(0,0,0,0.6)",
-        paddingLeft: 10,
-        marginTop: 15,
-        marginBottom: 5,
-    },
-    textError: {
-        color: "rgba(255,0,0,0.7)",
-    },
-    alertError: {
-        backgroundColor: "red",
-        color: "white",
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        textAlign: "center",
-    },
-    textErrorRight: {
-        color: "rgba(255,0,0,0.7)",
-        textAlign: "right",
-    },
-    padreButtom: {
-        alignItems: "flex-end",
-    },
-    buttonEmptyFile: {
-        backgroundColor: "rgba(0, 0, 0,0.4)",
-        marginVertical: 10,
-        borderRadius: 20,
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-    },
-    buttonFile: {
-        backgroundColor: "rgba(44, 84, 151,0.7)",
-        marginVertical: 10,
-        borderRadius: 20,
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-    },
-    buttomPequeno: {
-        backgroundColor: "#b7c62f",
-        borderRadius: 20,
-        padding: 10,
-        paddingHorizontal: 30,
-        marginVertical: 25,
-    },
-    textButton: {
-        color: "white",
-        textAlign: "center",
-    },
-});
