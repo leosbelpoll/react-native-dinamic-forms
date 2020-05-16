@@ -38,14 +38,6 @@ export default StyleSheet.create({
         height: 50,
         resizeMode: "contain",
     },
-    icons: {
-        display: "flex",
-        flexDirection: "row",
-        padding: 10,
-    },
-    iconSearch: {
-        paddingRight: 25,
-    },
     title: {
         fontSize: 25,
         textAlign: "center",

@@ -12,17 +12,33 @@ export default function Header(props) {
             <View>
                 <Image source={require("../assets/images/header-app.png")} style={styles.imagenHeader} />
             </View>
-            <View style={styles.icons}>
-                <View style={styles.iconSearch}>
-                    <FontAwesome name="search" size={24} color="#4f5b84" />
+            <View
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    padding: 10,
+                }}
+            >
+                <View
+                    style={{
+                        paddingRight: 20,
+                        marginTop: 2
+                    }}
+                >
+                    <FontAwesome name="search" size={20} color="black" />
                 </View>
                 <View>
                     {/* <FontAwesome5 name="user" size={24} color="#4f5b84" /> */}
-                    <MaterialCommunityIcons name="logout" size={24} color="black" onPress={() => {
-                        AsyncStorage.removeItem(ACCESS_TOKEN_IDENTIFIER);
-                        AsyncStorage.removeItem(USER_NAME);
-                        props.navigation.navigate("Login");
-                    }} />
+                    <MaterialCommunityIcons
+                        name="logout"
+                        size={24}
+                        color="black"
+                        onPress={() => {
+                            AsyncStorage.removeItem(ACCESS_TOKEN_IDENTIFIER);
+                            AsyncStorage.removeItem(USER_NAME);
+                            props.navigation.navigate("Login");
+                        }}
+                    />
                 </View>
             </View>
         </View>
