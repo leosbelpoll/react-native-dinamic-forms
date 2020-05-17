@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View, AsyncStorage } from "react-native";
 import styles from "../styles";
 import { ScrollView } from "react-native-gesture-handler";
-import { API_URL, ACCESS_TOKEN_IDENTIFIER } from "../configs";
+import { API_URL, ACCESS_TOKEN_IDENTIFIER, USER_NAME } from "../configs";
 import Header from "../components/Header";
 import Loading from "./Loading";
 

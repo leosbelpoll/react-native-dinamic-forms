@@ -8,6 +8,7 @@ import Loading from "./Loading";
 
 export default function Login(props) {
     const [error, setError] = useState();
+    const [connectionError, setConnectionError] = useState();
     const [validating, isValidating] = useState(false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState();
@@ -46,7 +47,8 @@ export default function Login(props) {
                 }
             })
             .catch((err) => {
-                setError(err);
+                setLoading(false);
+                setConnectionError(err);
             });
     };
 
@@ -94,6 +96,11 @@ export default function Login(props) {
             {error && (
                 <Text style={styles.notificationError} onPress={() => setError(null)}>
                     Usuario o contraseña incorrecta.
+                </Text>
+            )}
+            {connectionError && (
+                <Text style={styles.notificationError} onPress={() => setError(null)}>
+                    Ha ocurrido un error de red.
                 </Text>
             )}
             {validating && (!username || !password) && (

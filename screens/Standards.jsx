@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View, AsyncStorage, Alert } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import styles from "../styles";
-import { ACCESS_TOKEN_IDENTIFIER, API_URL } from "../configs";
+import { ACCESS_TOKEN_IDENTIFIER, API_URL, USER_NAME } from "../configs";
 import Header from "../components/Header";
 import Loading from "./Loading";
 
@@ -72,11 +72,13 @@ export default function Standards(props) {
                             } else {
                                 if (standard.type === "FORM") {
                                     props.navigation.navigate("Form", {
-                                        standard: res
+                                        standard: res,
+                                        project
                                     });
                                 } else if (standard.type === "VEHICLE") {
                                     props.navigation.navigate("Vehicle", {
-                                        standard: res
+                                        standard: res,
+                                        project
                                     });
                                 } else {
                                     Alert.alert("Esta norma no tiene tipo.");

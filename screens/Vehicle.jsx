@@ -13,7 +13,6 @@ import styles from "../styles";
 
 export default function Vehicle(props) {
     const { standard, project } = props.route.params;
-    const [token, setToken] = useState([]);
     const [noplacas, setNoPlacas] = useState([]);
     const [bombasAbastecimiento, setBombasAbastecimiento] = useState([]);
     const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
@@ -111,48 +110,52 @@ export default function Vehicle(props) {
             setLoading(true);
             AsyncStorage.getItem(USER_NAME)
                 .then((username) => {
-                    let formData = new FormData();
-                    formData.append("username", username);
-                    formData.append("project_id", project.id);
-                    formData.append("standard_id", standard.id);
-                    formData.append("no_placa_id", noplaca || noplacas[0].value);
-                    formData.append("recorrido_inicial", recorridoInicial);
-                    formData.append("recorrido_final", recorridoFinal);
-                    formData.append("galones_comprados", galonesComprados);
-                    formData.append("bomba_abastecimiento_id", bombaAbastecimiento || bombasAbastecimiento[0].value);
-                    formData.append("sistema_amortiguacion_id", sistemaAmortiguacion || sistemasAmortiguacion[0].value);
-                    formData.append("explicacion_capacitacion", explicacionCapacitacion);
-                    formData.append("estado_medicion_id", estadoMedicion || estadosMedicion[0].value);
-                    formData.append("presion_neumaticos", presionNeumaticos);
-                    formData.append("recorrido_inicial_image", getFile(recorridoInicialImagen));
-                    formData.append("recorrido_final_image", getFile(recorridoFinalImagen));
-                    formData.append("galones_comprados_image", getFile(galonesCompradosImagen));
-                    fetch(`${API_URL}/vehicles`, {
-                        method: "POST",
-                        body: formData,
-                        headers: {
-                            Accept: "application/json",
-                            "Content-Type": "multipart/form-data",
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                        .then((res) => res.json())
-                        .then((res) => {
-                            if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                                throwAccountError();
-                            } else {
-                                setError(null);
-                                props.navigation.navigate("Projects", {
-                                    project,
-                                    standard,
-                                    username,
-                                    notification: {
-                                        type: "success",
-                                        message: `Vehículo creado correctamente`
+                    AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
+                        .then((token) => {
+                            let formData = new FormData();
+                            formData.append("username", username);
+                            formData.append("project_id", project.id);
+                            formData.append("standard_id", standard.id);
+                            formData.append("no_placa_id", noplaca || noplacas[0].value);
+                            formData.append("recorrido_inicial", recorridoInicial);
+                            formData.append("recorrido_final", recorridoFinal);
+                            formData.append("galones_comprados", galonesComprados);
+                            formData.append("bomba_abastecimiento_id", bombaAbastecimiento || bombasAbastecimiento[0].value);
+                            formData.append("sistema_amortiguacion_id", sistemaAmortiguacion || sistemasAmortiguacion[0].value);
+                            formData.append("explicacion_capacitacion", explicacionCapacitacion);
+                            formData.append("estado_medicion_id", estadoMedicion || estadosMedicion[0].value);
+                            formData.append("presion_neumaticos", presionNeumaticos);
+                            formData.append("recorrido_inicial_image", getFile(recorridoInicialImagen));
+                            formData.append("recorrido_final_image", getFile(recorridoFinalImagen));
+                            formData.append("galones_comprados_image", getFile(galonesCompradosImagen));
+                            fetch(`${API_URL}/vehicles`, {
+                                method: "POST",
+                                body: formData,
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "multipart/form-data",
+                                    Authorization: `Bearer ${token}`
+                                }
+                            })
+                                .then((res) => res.json())
+                                .then((res) => {
+                                    if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
+                                        throwAccountError();
+                                    } else {
+                                        setError(null);
+                                        props.navigation.navigate("Projects", {
+                                            project,
+                                            standard,
+                                            username,
+                                            notification: {
+                                                type: "success",
+                                                message: `Vehículo creado correctamente`
+                                            }
+                                        });
                                     }
                                 });
-                            }
-                        });
+                        })
+                        .done();
                 })
                 .done();
         }
@@ -162,7 +165,6 @@ export default function Vehicle(props) {
         setLoading(true);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
             .then((token) => {
-                setToken(token);
                 fetch(`${API_URL}/no-placas`, {
                     method: "GET",
                     headers: {
