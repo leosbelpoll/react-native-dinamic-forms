@@ -11,29 +11,32 @@ export default function Projects(props) {
     const { route } = props;
     const [projects, setProjects] = useState();
     const [notification, setNotification] = useState();
-    const [error, setError] = useState();
     const [loading, setLoading] = useState(false);
 
     const fetchMyAPI = async () => {
         setLoading(true);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
-            .then(token => {
+            .then((token) => {
                 fetch(`${API_URL}/projects`, {
                     method: "GET",
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+                        Authorization: `Bearer ${token}`
+                    }
                 })
-                    .then(res => res.json())
-                    .then(res => {
+                    .then((res) => res.json())
+                    .then((res) => {
                         if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                            setError("Unauthorized");
-                            setProjects(null);
-                            setLoading(false);
+                            AsyncStorage.removeItem(ACCESS_TOKEN_IDENTIFIER);
+                            AsyncStorage.removeItem(USER_NAME);
+                            props.navigation.navigate("Login", {
+                                notification: {
+                                    type: "error",
+                                    message: "Ingrese nuevamente por favor"
+                                }
+                            });
                         } else {
-                            setError(null);
                             setProjects(res);
                             setLoading(false);
                         }
@@ -56,7 +59,7 @@ export default function Projects(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
-            {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>}
+            {/* {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>} */}
             {notification && (
                 <Text
                     style={notification.type === "success" ? styles.notificationSuccess : styles.notificationError}
@@ -68,15 +71,15 @@ export default function Projects(props) {
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}>Elige un Projecto</Text>
-                    {(!projects || !projects.length) && !error && <Text>No hay elementos.</Text>}
+                    {projects && !projects.length && <Text>No hay elementos.</Text>}
                     {projects &&
-                        projects.map(project => (
+                        projects.map((project) => (
                             <TouchableOpacity
                                 key={project.id}
                                 style={styles.buttom}
                                 onPress={() => {
                                     props.navigation.navigate("Standards", {
-                                        project,
+                                        project
                                     });
                                     setNotification(null);
                                 }}
@@ -91,5 +94,5 @@ export default function Projects(props) {
 }
 
 Projects.navigationOptions = {
-    name: "Projects",
+    name: "Projects"
 };

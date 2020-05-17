@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as Network from "expo-network";
-import { StyleSheet, Text, TouchableOpacity, View, TextInput, AsyncStorage, Alert } from "react-native";
+import { Text, TouchableOpacity, View, TextInput, AsyncStorage, Alert } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { API_URL, ACCESS_TOKEN_IDENTIFIER, USER_NAME } from "../configs";
@@ -41,7 +40,7 @@ export default function Vehicle(props) {
 
         if (resultPermission) {
             const resultImagePiker = await ImagePicker.launchImageLibraryAsync({
-                allowsEditing: true,
+                allowsEditing: true
             });
             return resultImagePiker;
         }
@@ -72,7 +71,7 @@ export default function Vehicle(props) {
         }
     };
 
-    const getFile = uri => {
+    const getFile = (uri) => {
         let localUri = uri;
         let filename = localUri.split("/").pop();
 
@@ -81,6 +80,17 @@ export default function Vehicle(props) {
         let type = match ? `image/${match[1]}` : `image`;
 
         return { uri: localUri, name: filename, type };
+    };
+
+    const throwAccountError = () => {
+        AsyncStorage.removeItem(ACCESS_TOKEN_IDENTIFIER);
+        AsyncStorage.removeItem(USER_NAME);
+        props.navigation.navigate("Login", {
+            notification: {
+                type: "error",
+                message: "Ingrese nuevamente por favor"
+            }
+        });
     };
 
     const saveData = async () => {
@@ -100,7 +110,7 @@ export default function Vehicle(props) {
             setIsInvalidForm(false);
             setLoading(true);
             AsyncStorage.getItem(USER_NAME)
-                .then(username => {
+                .then((username) => {
                     let formData = new FormData();
                     formData.append("username", username);
                     formData.append("project_id", project.id);
@@ -123,22 +133,23 @@ export default function Vehicle(props) {
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "multipart/form-data",
-                            Authorization: `Bearer ${token}`,
-                        },
+                            Authorization: `Bearer ${token}`
+                        }
                     })
-                        .then(res => res.json())
-                        .then(res => {
+                        .then((res) => res.json())
+                        .then((res) => {
                             if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                                setError("Unauthorized");
-                                setIsInvalidForm(true);
-                                setLoading(false);
+                                throwAccountError();
                             } else {
                                 setError(null);
                                 props.navigation.navigate("Projects", {
                                     project,
                                     standard,
                                     username,
-                                    notification: { type: "success", message: `Vehículo creado correctamente` },
+                                    notification: {
+                                        type: "success",
+                                        message: `Vehículo creado correctamente`
+                                    }
                                 });
                             }
                         });
@@ -150,24 +161,23 @@ export default function Vehicle(props) {
     const fetchMyAPI = async () => {
         setLoading(true);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
-            .then(token => {
+            .then((token) => {
                 setToken(token);
                 fetch(`${API_URL}/no-placas`, {
                     method: "GET",
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+                        Authorization: `Bearer ${token}`
+                    }
                 })
-                    .then(res => res.json())
-                    .then(res => {
+                    .then((res) => res.json())
+                    .then((res) => {
                         if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                            setError("Unauthorized");
-                            setNoPlacas(null);
+                            throwAccountError();
                         } else {
                             setError(null);
-                            setNoPlacas(res.map(obj => ({ value: obj.id, label: obj.name })));
+                            setNoPlacas(res.map((obj) => ({ value: obj.id, label: obj.name })));
                             if (noplacas.length) {
                                 setNoPlaca(noplacas[0].value);
                             }
@@ -177,17 +187,16 @@ export default function Vehicle(props) {
                                 headers: {
                                     Accept: "application/json",
                                     "Content-Type": "application/json",
-                                    Authorization: `Bearer ${token}`,
-                                },
+                                    Authorization: `Bearer ${token}`
+                                }
                             })
-                                .then(res => res.json())
-                                .then(res => {
+                                .then((res) => res.json())
+                                .then((res) => {
                                     if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                                        setError("Unauthorized");
-                                        setBombasAbastecimiento(null);
+                                        throwAccountError();
                                     } else {
                                         setError(null);
-                                        setBombasAbastecimiento(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                        setBombasAbastecimiento(res.map((obj) => ({ value: obj.id, label: obj.name })));
                                         if (bombasAbastecimiento.length) {
                                             setBombaAbastecimiento(bombasAbastecimiento[0].value);
                                         }
@@ -197,17 +206,21 @@ export default function Vehicle(props) {
                                             headers: {
                                                 Accept: "application/json",
                                                 "Content-Type": "application/json",
-                                                Authorization: `Bearer ${token}`,
-                                            },
+                                                Authorization: `Bearer ${token}`
+                                            }
                                         })
-                                            .then(res => res.json())
-                                            .then(res => {
+                                            .then((res) => res.json())
+                                            .then((res) => {
                                                 if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                                                    setError("Unauthorized");
-                                                    setSistemasAmortiguacion(null);
+                                                    throwAccountError();
                                                 } else {
                                                     setError(null);
-                                                    setSistemasAmortiguacion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                                    setSistemasAmortiguacion(
+                                                        res.map((obj) => ({
+                                                            value: obj.id,
+                                                            label: obj.name
+                                                        }))
+                                                    );
                                                     if (sistemasAmortiguacion.length) {
                                                         setSistemaAmortiguacion(sistemasAmortiguacion[0].value);
                                                     }
@@ -217,17 +230,21 @@ export default function Vehicle(props) {
                                                         headers: {
                                                             Accept: "application/json",
                                                             "Content-Type": "application/json",
-                                                            Authorization: `Bearer ${token}`,
-                                                        },
+                                                            Authorization: `Bearer ${token}`
+                                                        }
                                                     })
-                                                        .then(res => res.json())
-                                                        .then(res => {
+                                                        .then((res) => res.json())
+                                                        .then((res) => {
                                                             if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
-                                                                setError("Unauthorized");
-                                                                setEstadosMedicion(null);
+                                                                throwAccountError();
                                                             } else {
                                                                 setError(null);
-                                                                setEstadosMedicion(res.map(obj => ({ value: obj.id, label: obj.name })));
+                                                                setEstadosMedicion(
+                                                                    res.map((obj) => ({
+                                                                        value: obj.id,
+                                                                        label: obj.name
+                                                                    }))
+                                                                );
                                                                 if (estadosMedicion.length) {
                                                                     setEstadoMedicion(estadosMedicion[0].value);
                                                                 }
@@ -262,8 +279,8 @@ export default function Vehicle(props) {
 
                     <Text style={styles.label}>No Placa</Text>
                     <View style={styles.select}>
-                        <Picker onValueChange={itemValue => setNoPlaca(itemValue)} selectedValue={noplaca}>
-                            {noplacas.map(item => (
+                        <Picker onValueChange={(itemValue) => setNoPlaca(itemValue)} selectedValue={noplaca}>
+                            {noplacas.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
@@ -274,7 +291,7 @@ export default function Vehicle(props) {
                         keyboardType="numeric"
                         style={(!recorridoInicial || isNaN(recorridoInicial)) && isValidating ? styles.inputError : styles.inputs}
                         placeholder="Km/h"
-                        onChangeText={text => setRecorridoInicial(text)}
+                        onChangeText={(text) => setRecorridoInicial(text)}
                         value={recorridoInicial}
                     />
                     {!recorridoInicial && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
@@ -294,7 +311,7 @@ export default function Vehicle(props) {
                         keyboardType="numeric"
                         style={(!recorridoFinal || isNaN(recorridoFinal)) && isValidating ? styles.inputError : styles.inputs}
                         placeholder="Km/h"
-                        onChangeText={text => setRecorridoFinal(text)}
+                        onChangeText={(text) => setRecorridoFinal(text)}
                         value={recorridoFinal}
                     />
                     {!recorridoFinal && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
@@ -314,7 +331,7 @@ export default function Vehicle(props) {
                         keyboardType="numeric"
                         style={(!galonesComprados || isNaN(galonesComprados)) && isValidating ? styles.inputError : styles.inputs}
                         placeholder="Cant"
-                        onChangeText={text => setGalonesComprados(text)}
+                        onChangeText={(text) => setGalonesComprados(text)}
                         value={galonesComprados}
                     />
                     {!galonesComprados && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
@@ -331,8 +348,8 @@ export default function Vehicle(props) {
 
                     <Text style={styles.label}>Bomba de Abastecimiento</Text>
                     <View style={styles.select}>
-                        <Picker onValueChange={itemValue => setBombaAbastecimiento(itemValue)} selectedValue={bombaAbastecimiento}>
-                            {bombasAbastecimiento.map(item => (
+                        <Picker onValueChange={(itemValue) => setBombaAbastecimiento(itemValue)} selectedValue={bombaAbastecimiento}>
+                            {bombasAbastecimiento.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
@@ -340,8 +357,8 @@ export default function Vehicle(props) {
 
                     <Text style={styles.label}>Sistema de amortiguación del vehículo</Text>
                     <View style={styles.select}>
-                        <Picker onValueChange={itemValue => setSistemaAmortiguacion(itemValue)} selectedValue={sistemaAmortiguacion}>
-                            {sistemasAmortiguacion.map(item => (
+                        <Picker onValueChange={(itemValue) => setSistemaAmortiguacion(itemValue)} selectedValue={sistemaAmortiguacion}>
+                            {sistemasAmortiguacion.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
@@ -352,15 +369,15 @@ export default function Vehicle(props) {
                         style={!explicacionCapacitacion && isValidating ? styles.inputAreaError : [styles.inputs, styles.inputArea]}
                         multiline={true}
                         placeholder="Escriba"
-                        onChangeText={text => setExplicacionCapacitacion(text)}
+                        onChangeText={(text) => setExplicacionCapacitacion(text)}
                         value={explicacionCapacitacion}
                     />
                     {!explicacionCapacitacion && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
 
                     <Text style={styles.label}>Estado de Medición vehículo</Text>
                     <View style={styles.select}>
-                        <Picker onValueChange={itemValue => setEstadoMedicion(itemValue)} selectedValue={estadoMedicion}>
-                            {estadosMedicion.map(item => (
+                        <Picker onValueChange={(itemValue) => setEstadoMedicion(itemValue)} selectedValue={estadoMedicion}>
+                            {estadosMedicion.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
@@ -370,7 +387,7 @@ export default function Vehicle(props) {
                         keyboardType="numeric"
                         style={(!presionNeumaticos || isNaN(presionNeumaticos)) && isValidating ? styles.inputError : styles.inputs}
                         placeholder="Psi"
-                        onChangeText={text => setPresionNeumaticos(text)}
+                        onChangeText={(text) => setPresionNeumaticos(text)}
                         value={presionNeumaticos}
                     />
                     {!presionNeumaticos && isValidating && <Text style={styles.textError}>Campo requerido</Text>}
@@ -388,5 +405,5 @@ export default function Vehicle(props) {
 }
 
 Vehicle.navigationOptions = {
-    name: "Vehicle",
+    name: "Vehicle"
 };

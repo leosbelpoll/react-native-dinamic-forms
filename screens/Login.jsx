@@ -25,10 +25,13 @@ export default function Login(props) {
         fetch(`${API_URL}/auth/login`, {
             method: "POST",
             body: JSON.stringify({ username, password }),
-            headers: { Accept: "application/json", "Content-Type": "application/json" },
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            }
         })
-            .then(res => res.json())
-            .then(async res => {
+            .then((res) => res.json())
+            .then(async (res) => {
                 if (res.error === "Unauthorized") {
                     setError("Unauthorized");
                     setLoading(false);
@@ -42,7 +45,7 @@ export default function Login(props) {
                     props.navigation.navigate("Projects");
                 }
             })
-            .catch(err => {
+            .catch((err) => {
                 setError(err);
             });
     };
@@ -50,17 +53,17 @@ export default function Login(props) {
     const checkUser = async () => {
         setLoading(true);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
-            .then(token => {
+            .then((token) => {
                 fetch(`${API_URL}/version`, {
                     method: "GET",
                     headers: {
                         Accept: "application/json",
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
+                        Authorization: `Bearer ${token}`
+                    }
                 })
-                    .then(res => res.json())
-                    .then(res => {
+                    .then((res) => res.json())
+                    .then((res) => {
                         if (!["Unauthorized.", "Unauthenticated."].includes(res.message)) {
                             props.navigation.navigate("Projects");
                         }
@@ -85,18 +88,26 @@ export default function Login(props) {
             style={{
                 flex: 1,
                 backgroundColor: "white",
-                paddingTop: 100,
+                paddingTop: 100
             }}
         >
-            {error && <Text style={styles.notificationError} onPress={() => setError(null)}>Usuario o contraseña incorrecta.</Text>}
-            {validating && (!username || !password) && <Text style={styles.notificationError} onPress={() => isValidating(false)}>Valide los campos del formulario.</Text>}
+            {error && (
+                <Text style={styles.notificationError} onPress={() => setError(null)}>
+                    Usuario o contraseña incorrecta.
+                </Text>
+            )}
+            {validating && (!username || !password) && (
+                <Text style={styles.notificationError} onPress={() => isValidating(false)}>
+                    Valide los campos del formulario.
+                </Text>
+            )}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
                     <Text style={styles.title}> Inicio de Sesión </Text>
                     <TextInput
-                        style={(validating && !username) ? styles.inputError : styles.inputs}
+                        style={validating && !username ? styles.inputError : styles.inputs}
                         placeholder="Usuario"
-                        onChangeText={text => {
+                        onChangeText={(text) => {
                             setUsername(text);
                             setError(null);
                         }}
@@ -104,10 +115,10 @@ export default function Login(props) {
                     />
                     {validating && !username && <Text style={styles.textError}>Campo requerido</Text>}
                     <TextInput
-                        style={[(validating && !password) ? styles.inputError : styles.inputs, {marginTop: 20}]}
+                        style={[validating && !password ? styles.inputError : styles.inputs, { marginTop: 20 }]}
                         placeholder="Contraseña"
                         secureTextEntry={true}
-                        onChangeText={pass => {
+                        onChangeText={(pass) => {
                             setPassword(pass);
                             setError(null);
                         }}
@@ -124,5 +135,5 @@ export default function Login(props) {
 }
 
 Login.navigationOptions = {
-    name: "Login",
+    name: "Login"
 };

@@ -9,7 +9,6 @@ import { Platform, StatusBar, StyleSheet, View, Text } from "react-native";
 import Login from "./screens/Login";
 import Projects from "./screens/Projects";
 import Standards from "./screens/Standards";
-import SubStandards from "./screens/SubStandards";
 import Form from "./screens/Form";
 import Footer from "./components/Footer";
 import Vehicle from "./screens/Vehicle";
@@ -61,14 +60,7 @@ export default function App(props) {
 						<Stack.Screen name="Standards" component={Standards} />
 						<Stack.Screen name="Camera" component={Camera} />
 						<Stack.Screen name="Vehicle" component={Vehicle} />
-						<Stack.Screen
-							name="SubStandards"
-							component={SubStandards}
-						/>
-						<Stack.Screen
-							name="Form"
-							component={Form}
-						/>
+						<Stack.Screen name="Form" component={Form} />
 					</Stack.Navigator>
 				</NavigationContainer>
 				<Footer />
