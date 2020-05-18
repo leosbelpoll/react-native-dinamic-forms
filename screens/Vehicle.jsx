@@ -33,6 +33,7 @@ export default function Vehicle(props) {
     const [isValidating, setIsValidating] = useState(false);
     const [isInvalidForm, setIsInvalidForm] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [apiErrors, setApiErrors] = useState(false);
 
     const openGallery = async () => {
         const resultPermission = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -140,8 +141,12 @@ export default function Vehicle(props) {
                                 .then((res) => {
                                     if (["Unauthorized.", "Unauthenticated."].includes(res.message)) {
                                         throwAccountError();
+                                    } else if (res.errors) {
+                                        setLoading(false);
+                                        setApiErrors(res.errors);
                                     } else {
                                         setError(null);
+                                        setApiErrors(null);
                                         props.navigation.navigate("Projects", {
                                             project,
                                             standard,
@@ -274,6 +279,7 @@ export default function Vehicle(props) {
         <View style={styles.container}>
             <Header {...props} />
             {isInvalidForm && <Text style={styles.notificationError}>Verifique los campos del formulario.</Text>}
+            {apiErrors && Object.keys(apiErrors).map((key) => <Text key={key} style={styles.notificationError} onPress={() => setApiErrors(null)}>{apiErrors[key][0]}</Text>)}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainerForm}>
                 <View>
                     <Text style={styles.title}>{standard.name}</Text>
