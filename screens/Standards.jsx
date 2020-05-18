@@ -67,7 +67,7 @@ export default function Standards(props) {
                                 }
                             });
                         } else {
-                            if (res.standards.length) {
+                            if (res.standards && res.standards.length) {
                                 setStandards(res.standards);
                             } else {
                                 if (standard.type === "FORM") {

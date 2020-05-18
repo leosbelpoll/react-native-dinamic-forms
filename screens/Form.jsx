@@ -125,8 +125,8 @@ export default function Form(props) {
                 if (field.type === "SELECTOR") {
                     let url = API_URL;
                     switch (field.selector) {
-                        case "NO_PLACA":
-                            url += "/no-placas";
+                        case "AUTOMOVIL":
+                            url += "/automoviles";
                             break;
                         case "BOMBA_ABASTECIMIENTO":
                             url += "/bombas-abastecimiento";

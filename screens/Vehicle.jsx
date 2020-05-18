@@ -13,12 +13,12 @@ import styles from "../styles";
 
 export default function Vehicle(props) {
     const { standard, project } = props.route.params;
-    const [noplacas, setNoPlacas] = useState([]);
+    const [automoviles, setAutomoviles] = useState([]);
     const [bombasAbastecimiento, setBombasAbastecimiento] = useState([]);
     const [sistemasAmortiguacion, setSistemasAmortiguacion] = useState([]);
     const [estadosMedicion, setEstadosMedicion] = useState([]);
     const [error, setError] = useState();
-    const [noplaca, setNoPlaca] = useState();
+    const [automovil, setAutomovil] = useState();
     const [recorridoInicial, setRecorridoInicial] = useState("");
     const [recorridoFinal, setRecorridoFinal] = useState("");
     const [galonesComprados, setGalonesComprados] = useState("");
@@ -116,7 +116,7 @@ export default function Vehicle(props) {
                             formData.append("username", username);
                             formData.append("project_id", project.id);
                             formData.append("standard_id", standard.id);
-                            formData.append("no_placa_id", noplaca || noplacas[0].value);
+                            formData.append("automovil_id", automovil || automoviles[0].value);
                             formData.append("recorrido_inicial", recorridoInicial);
                             formData.append("recorrido_final", recorridoFinal);
                             formData.append("galones_comprados", galonesComprados);
@@ -169,7 +169,7 @@ export default function Vehicle(props) {
         setLoading(true);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
             .then((token) => {
-                fetch(`${API_URL}/no-placas`, {
+                fetch(`${API_URL}/automoviles`, {
                     method: "GET",
                     headers: {
                         Accept: "application/json",
@@ -183,9 +183,9 @@ export default function Vehicle(props) {
                             throwAccountError();
                         } else {
                             setError(null);
-                            setNoPlacas(res.map((obj) => ({ value: obj.id, label: obj.name })));
-                            if (noplacas.length) {
-                                setNoPlaca(noplacas[0].value);
+                            setAutomoviles(res.map((obj) => ({ value: obj.id, label: obj.no_placa })));
+                            if (automoviles.length) {
+                                setAutomovil(automoviles[0].value);
                             }
 
                             fetch(`${API_URL}/bombas-abastecimiento`, {
@@ -286,8 +286,8 @@ export default function Vehicle(props) {
 
                     <Text style={styles.label}>No Placa</Text>
                     <View style={styles.select}>
-                        <Picker onValueChange={(itemValue) => setNoPlaca(itemValue)} selectedValue={noplaca}>
-                            {noplacas.map((item) => (
+                        <Picker onValueChange={(itemValue) => setAutomovil(itemValue)} selectedValue={automovil}>
+                            {automoviles.map((item) => (
                                 <Picker.Item key={item.value} label={item.label} value={item.value} />
                             ))}
                         </Picker>
