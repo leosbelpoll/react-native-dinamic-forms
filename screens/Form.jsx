@@ -201,6 +201,18 @@ export default function Form(props) {
         }
     };
 
+    const openCamera = async (operation) => {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+
+        if (status === "granted") {
+            props.navigation.navigate("Camera", {
+                operation
+            });
+        } else {
+            Alert.alert("La app no tiene permisos para usar la camara");
+        }
+    };
+
     const updateFieldInnerForm = async (fieldId, value) => {
         setInnerForm({
             ...innerForm,
@@ -232,7 +244,7 @@ export default function Form(props) {
                         .sort((a, b) => (a.position > b.position ? 1 : b.position > a.position ? -1 : 0))
                         .map((field) => (
                             <React.Fragment key={field.id}>
-                                <Text style={styles.label}>{field.type !== "IMAGE" && (field.label || field.id)}</Text>
+                                <Text style={styles.label}>{field.type !== "IMAGE" && (field.label || field.name)}</Text>
                                 {["NUMBER", "SHORT_TEXT", "LONG_TEXT"].includes(field.type) && (
                                     <>
                                         <TextInput
@@ -266,8 +278,12 @@ export default function Form(props) {
                                             <TouchableOpacity
                                                 style={innerForm[field.id] && innerForm[field.id] ? styles.buttonFile : styles.buttonEmptyFile}
                                                 onPress={async () => {
-                                                    const image = await getGalleryImage();
-                                                    updateFieldInnerForm(field.id, image.uri);
+                                                    const setImage = (uri) => {
+                                                        updateFieldInnerForm(field.id, uri);
+                                                    };
+                                                    props.navigation.navigate("Camera", {
+                                                        operation: setImage
+                                                    });
                                                 }}
                                             >
                                                 <Text style={styles.textLight}>Seleccionar {field.label || field.name}</Text>

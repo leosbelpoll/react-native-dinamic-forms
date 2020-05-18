@@ -46,25 +46,24 @@ export default function Vehicle(props) {
     };
 
     const openGalleryRecorridoInicial = async () => {
-        const value = await openGallery();
-        setRecorridoInicialImagen(value.uri);
+        const value = await openCamera(setRecorridoInicialImagen);
     };
 
     const openGalleryRecorridoFinal = async () => {
-        const value = await openGallery();
-        setRecorridoFinalImagen(value.uri);
+        const value = await openCamera(setRecorridoFinalImagen);
     };
 
     const openGalleryGalonesComprados = async () => {
-        const value = await openGallery();
-        setGalonesCompradosImagen(value.uri);
+        const value = await openCamera(setGalonesCompradosImagen);
     };
 
-    const openCamera = async () => {
+    const openCamera = async (operation) => {
         const { status } = await Permissions.askAsync(Permissions.CAMERA);
 
         if (status === "granted") {
-            props.navigation.navigate("Camera");
+            props.navigation.navigate("Camera", {
+                operation
+            });
         } else {
             Alert.alert("La app no tiene permisos para usar la camara");
         }
