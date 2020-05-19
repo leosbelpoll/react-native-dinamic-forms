@@ -183,7 +183,7 @@ export default function Vehicle(props) {
                             throwAccountError();
                         } else {
                             setError(null);
-                            setAutomoviles(res.map((obj) => ({ value: obj.id, label: obj.no_placa })));
+                            setAutomoviles(res.map((obj) => ({ value: obj.id, label: obj.name })));
                             if (automoviles.length) {
                                 setAutomovil(automoviles[0].value);
                             }
