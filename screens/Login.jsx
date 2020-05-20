@@ -5,6 +5,7 @@ import styles from "../styles";
 
 import { API_URL, ACCESS_TOKEN_IDENTIFIER, USER_NAME } from "../configs";
 import Loading from "./Loading";
+import Header from "../components/Header";
 
 export default function Login(props) {
     const [error, setError] = useState();
@@ -90,9 +91,10 @@ export default function Login(props) {
             style={{
                 flex: 1,
                 backgroundColor: "white",
-                paddingTop: 100
+                paddingTop: 0
             }}
         >
+            <Header {...props} hideButtons={true} />
             {error && (
                 <Text style={styles.notificationError} onPress={() => setError(null)}>
                     Usuario o contraseña incorrecta.
