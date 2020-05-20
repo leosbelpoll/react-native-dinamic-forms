@@ -10,6 +10,7 @@ export default function Standards(props) {
     const [standards, setStandards] = useState();
     const { project } = props.route.params;
     const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState(false);
 
     const fetchMyAPI = async () => {
         setLoading(true);
@@ -45,6 +46,7 @@ export default function Standards(props) {
 
     const onClick = (standard) => {
         setLoading(true);
+        setApiError(null);
         AsyncStorage.getItem(ACCESS_TOKEN_IDENTIFIER)
             .then((token) => {
                 fetch(`${API_URL}/standards/${standard.id}`, {
@@ -66,6 +68,8 @@ export default function Standards(props) {
                                     message: "Ingrese nuevamente por favor"
                                 }
                             });
+                        } else if (res.error) {
+                            setApiError(res.error);
                         } else {
                             if (res.standards && res.standards.length) {
                                 setStandards(res.standards);
@@ -102,6 +106,11 @@ export default function Standards(props) {
     return (
         <View style={styles.container}>
             <Header {...props} />
+            {apiError && (
+                <Text style={styles.notificationError} onPress={() => setApiError(null)}>
+                    {apiError}
+                </Text>
+            )}
             {/* {error && <Text style={styles.notificationError}>Error cargando elementos.</Text>} */}
             <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                 <View>
