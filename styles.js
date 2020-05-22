@@ -70,6 +70,9 @@ export default StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 20,
   },
+  selectError: {
+    borderColor: COLOR_ERROR
+  },
   inputArea: {
     minHeight: 140,
   },
